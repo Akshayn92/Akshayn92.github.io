@@ -1,11 +1,432 @@
-<!doctype html>
-<html>
-<head>
-<title>Our Funky HTML Page</title>
-<meta name="description" content="Our first page">
-<meta name="keywords" content="html tutorial template">
 </head>
-<body>
-Content goes here.
-</body>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Diabetes-Classifier</h1>
+      <h2 class="project-tagline">Classification prediction models of diabetes NHANES data in R: Logistic Regression, Random Forest, Naive Bayes and XGBoost comparisons</h2>
+      
+        <a href="https://github.com/aelb66/Diabetes-Classifier" class="btn">View on GitHub</a>
+      
+      
+    </section>
+
+    <section class="main-content">
+      <h1 id="how-i-created-type-2-diabetes-classification-models-using-r-and-how-you-can-too">How I created type 2 diabetes classification models using R and how you can too</h1>
+<p><br /></p>
+
+<p><img src="https://user-images.githubusercontent.com/75398560/123784120-74fc4900-d91a-11eb-8e86-389c47994f47.png" alt="image" /></p>
+
+<p><br /></p>
+
+<p>Check out my <a href="https://www.alolelba.com/">personal website</a> for more projects.</p>
+
+<p><br /></p>
+
+<h1 class="no_toc" id="contents">Contents</h1>
+<ul id="markdown-toc">
+  <li><a href="#how-i-created-type-2-diabetes-classification-models-using-r-and-how-you-can-too" id="markdown-toc-how-i-created-type-2-diabetes-classification-models-using-r-and-how-you-can-too">How I created type 2 diabetes classification models using R and how you can too</a>    <ul>
+      <li><a href="#background-on-type-2-diabetes" id="markdown-toc-background-on-type-2-diabetes">Background on Type 2 Diabetes</a></li>
+      <li><a href="#data" id="markdown-toc-data">Data</a></li>
+      <li><a href="#1-libraries" id="markdown-toc-1-libraries">1. Libraries</a></li>
+      <li><a href="#2-pre-processing" id="markdown-toc-2-pre-processing">2. Pre-processing</a>        <ul>
+          <li><a href="#21-extracting-data" id="markdown-toc-21-extracting-data">2.1 Extracting data</a></li>
+          <li><a href="#22-merging-datasets" id="markdown-toc-22-merging-datasets">2.2 Merging datasets</a></li>
+          <li><a href="#23-removing-25-missing-data" id="markdown-toc-23-removing-25-missing-data">2.3 Removing 25% missing data</a></li>
+          <li><a href="#24-data-type-transformations" id="markdown-toc-24-data-type-transformations">2.4 Data type transformations</a></li>
+          <li><a href="#25-splitting-data-into-train-and-test" id="markdown-toc-25-splitting-data-into-train-and-test">2.5 Splitting data into train and test</a></li>
+          <li><a href="#26-single-imputation" id="markdown-toc-26-single-imputation">2.6 Single imputation</a></li>
+          <li><a href="#27-downsampling" id="markdown-toc-27-downsampling">2.7 Downsampling</a></li>
+          <li><a href="#28-dummy-coding-normalisation-and-standardisation" id="markdown-toc-28-dummy-coding-normalisation-and-standardisation">2.8 Dummy coding, normalisation and standardisation</a></li>
+        </ul>
+      </li>
+      <li><a href="#3-feature-selection" id="markdown-toc-3-feature-selection">3. Feature Selection</a></li>
+      <li><a href="#4-lasso-logistic-regression" id="markdown-toc-4-lasso-logistic-regression">4. LASSO Logistic Regression</a></li>
+      <li><a href="#5-random-forest-model" id="markdown-toc-5-random-forest-model">5. Random Forest Model</a></li>
+      <li><a href="#6-naive-bayes-model" id="markdown-toc-6-naive-bayes-model">6. Naive Bayes Model</a></li>
+      <li><a href="#7-extreme-gradient-boost-xgboost-model" id="markdown-toc-7-extreme-gradient-boost-xgboost-model">7. eXtreme Gradient Boost (XGBoost) Model</a></li>
+      <li><a href="#references" id="markdown-toc-references">References</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="background-on-type-2-diabetes">Background on Type 2 Diabetes</h2>
+<p>Diabetes is the fastest growing chronic disease in Australia, with one individual developing this disease every five minutes (Diabetes Australia, 2020). Additionally, diabetes contributes to one in every ten deaths in Australia (Australian Institute of Health and Welfare [AIHW], 2020). Furthermore, more than 90% of cases with type 2 diabetes (T2D) may be <em>avoided</em> if accompanying preventable risk factors such as unhealthy eating habits and a sedentary lifestyle are modified (Willett, 2002).</p>
+
+<p>In Australia alone, estimated costs are $14.6 billion dollars for T2D annually (Lee et al., 2012). Shockingly, in Australia for every five people who are diagnosed, <em>four are left undiagnosed</em> (Valentine et al., 2011). Therefore, detecting and predicting disease onset in individuals is the first step to prevention and management of T2D progression. I aim to evaluate machine learning classification models of LASSO logistic regression, random forest, Naïve Bayes and XGBoost to detect and accurately classify patients with T2D.</p>
+
+<h2 id="data">Data</h2>
+<p>The National Health and Nutrition Examination Survey <a href="https://wwwn.cdc.gov/nchs/nhanes/default.aspx">NHANES</a> is a continuous biennial survey program beginning from 1999, used to assess the mental health, physical health, and nutrition of American people (Centre for Disease Control and Prevention in America [CDC]).</p>
+
+<p>On average the survey collects a nationally representative random sample of 5,000 responses per year. This novel study will utilise more than 100,000 observations between 1999-2018 and 12,300 variables. I used the first four categories of NHANES datas as similar questions were asked in the ‘Examination’ and ‘Questionnaire’ categories to the ‘Dietary’ category.</p>
+
+<ol>
+  <li>Demographics</li>
+  <li>Examination</li>
+  <li>Laboratory</li>
+  <li>Questionnaire</li>
+  <li>Dietary</li>
+</ol>
+
+<p>NHANES dataset incorporates medical and physiological data (e.g., BMI, blood pressure mm/Hg), as well as laboratory data (e.g., LDL cholesterol readings mg/dL).</p>
+
+<p>This in combination with demographic, dietary, and health-related behavioural questions (e.g., alcohol consumption in past 12 months) enable researchers to contextualise major disease prevalence including relevant risk factors and therefore, NHANES data is widely used in healthcare research (Dong et al., 2019;  McDowell et al., 2004; Zhu et al, 2020).</p>
+
+<p>The data was retrieved from the <code class="language-plaintext highlighter-rouge">nhanesA</code> package in R and analysed in R. As the aim of the study is to create a classification model to predict T2D, participants were identified as diabetic if they answered “yes” to the question “<em>Have you been told by a doctor you have diabetes?</em>” Participants who answered “no” were identified as non-diabetic.</p>
+
+<h2 id="1-libraries">1. Libraries</h2>
+<p>Good coding practice is keeping all your libraries in a chunk and commenting what each library does. I used the following libraries for this project.</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">nhanesA</span><span class="p">)</span><span class="w"> </span><span class="c1">#importing NHANES data</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span><span class="w"> </span><span class="c1">#manipulating data</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">purrr</span><span class="p">)</span><span class="w"> </span><span class="c1">#manipulating data</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">finalfit</span><span class="p">)</span><span class="w"> </span><span class="c1">#initial data analysis</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">caret</span><span class="p">)</span><span class="w"> </span><span class="c1">#ML workflows</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">randomForest</span><span class="p">)</span><span class="c1">#Random Forest</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">naivebayes</span><span class="p">)</span><span class="w"> </span><span class="c1">#Naivebayes</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">glmnet</span><span class="p">)</span><span class="c1"># LASSO regression</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span><span class="c1">#visualisation</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">mice</span><span class="p">)</span><span class="w"> </span><span class="c1">#univariate imputation</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">NADIA</span><span class="p">)</span><span class="w"> </span><span class="c1">#reusing same univariate imputation on test data</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">plyr</span><span class="p">)</span><span class="w"> </span><span class="c1">#XGBoost</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">xgboost</span><span class="p">)</span><span class="c1">#XGBoost</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="2-pre-processing">2. Pre-processing</h2>
+
+<h3 id="21-extracting-data">2.1 Extracting data</h3>
+<p>Researchers in the past studies chose 14 variables including demographics like age and ethnicity, as well as examination components like BMI and hypertension. I included these variables, however, also added variables relating to laboratory data as strong associations to T2D have previously been shown in literature (Akinsegun et al., 2014; Park et al., 2021; Taheri et al., 2018). This resulted in extracting <strong>75</strong> variables during initial feature selection.</p>
+
+<p>Example shortened code for extracting relevant sub-section data for 2003-2004 Survey below. This was done for each survey from 1999-2018. This took me a very long time to choose the right variables, though it’s always important to <strong>know your data</strong>.</p>
+
+<p>You can also run feature selection on all the variables (12,300) and let the data choose (i.e., data-driven approach),  I was able to forgo this method as <a href="https://pubmed.ncbi.nlm.nih.gov/20307319/">past researchers</a> already did this.</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">####Extracting relevant sub-section data for 2003-2004 Survey####</span><span class="w">
+
+</span><span class="c1">#Demographic section</span><span class="w">
+</span><span class="n">D</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nhanes</span><span class="p">(</span><span class="s1">'DEMO_C'</span><span class="p">)</span><span class="w"> </span><span class="c1">#Demographic data</span><span class="w">
+
+</span><span class="c1">#Examination section</span><span class="w">
+</span><span class="n">BP</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nhanes</span><span class="p">(</span><span class="s1">'BPX_C'</span><span class="p">)</span><span class="w"> </span><span class="c1">#Blood pressure data</span><span class="w">
+</span><span class="n">BM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nhanes</span><span class="p">(</span><span class="s1">'BMX_C'</span><span class="p">)</span><span class="w"> </span><span class="c1">#Body measures data</span><span class="w">
+
+</span><span class="c1">#Laboratory section</span><span class="w">
+</span><span class="n">AL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nhanes</span><span class="p">(</span><span class="s1">'L16_C'</span><span class="p">)</span><span class="w"> </span><span class="c1"># Albumin - Urine</span><span class="w">
+</span><span class="n">LD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nhanes</span><span class="w"> </span><span class="p">(</span><span class="s1">'L13AM_C'</span><span class="p">)</span><span class="w"> </span><span class="c1">#LDL Cholesterol</span><span class="w">
+</span><span class="n">HD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nhanes</span><span class="w"> </span><span class="p">(</span><span class="s1">'L13_C'</span><span class="p">)</span><span class="w"> </span><span class="c1">#HDL Cholesterol</span><span class="w">
+
+</span><span class="c1">####Merging all sub-sections together based on sequence number of the survey####</span><span class="w">
+</span><span class="n">survey_2003_2004</span><span class="w"> </span><span class="o">=</span><span class="w">
+  </span><span class="nf">list</span><span class="p">(</span><span class="n">D</span><span class="p">,</span><span class="n">BP</span><span class="p">,</span><span class="n">BM</span><span class="p">,</span><span class="n">AL</span><span class="p">,</span><span class="n">LD</span><span class="p">,</span><span class="n">HD</span><span class="p">,</span><span class="n">GL</span><span class="p">,</span><span class="n">PL</span><span class="p">,</span><span class="n">PRO</span><span class="p">,</span><span class="n">BL</span><span class="p">,</span><span class="n">ALQ</span><span class="p">,</span><span class="n">DI</span><span class="p">,</span><span class="n">DB</span><span class="p">,</span><span class="n">KI</span><span class="p">,</span><span class="n">MC</span><span class="p">,</span><span class="n">PH</span><span class="p">,</span><span class="n">SM</span><span class="p">,</span><span class="w"> </span><span class="n">BPQ</span><span class="p">,</span><span class="n">CH</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">purrr</span><span class="o">::</span><span class="n">reduce</span><span class="p">(</span><span class="n">full_join</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"SEQN"</span><span class="p">)</span><span class="w"> 
+
+</span><span class="c1">###Selecting relevant questions from sub-sections###  75 variables</span><span class="w">
+</span><span class="n">survey_2003_2004</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">survey_2003_2004</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">dplyr</span><span class="o">::</span><span class="n">select</span><span class="p">(</span><span class="n">RIAGENDR</span><span class="p">,</span><span class="w"> </span><span class="n">RIDAGEYR</span><span class="p">,</span><span class="w"> </span><span class="n">RIDRETH1</span><span class="p">,</span><span class="w"> </span><span class="n">DMDBORN</span><span class="p">,</span><span class="w"> </span><span class="n">DMDYRSUS</span><span class="p">,</span><span class="w"> </span><span class="n">DMDEDUC2</span><span class="p">,</span><span class="n">INDHHINC</span><span class="p">,</span><span class="w"> </span><span class="n">BPXSY1</span><span class="p">,</span><span class="w"> </span><span class="n">BPXDI1</span><span class="p">,</span><span class="w"> </span><span class="n">BMXWT</span><span class="p">,</span><span class="w"> </span><span class="n">BMXHT</span><span class="p">,</span><span class="w"> </span><span class="n">BMXBMI</span><span class="p">,</span><span class="w"> </span><span class="n">BMXARMC</span><span class="p">,</span><span class="w"> </span><span class="n">BMXARML</span><span class="p">,</span><span class="w"> </span><span class="n">BMXLEG</span><span class="p">,</span><span class="w"> </span><span class="n">BMXWAIST</span><span class="p">,</span><span class="w"> </span><span class="n">LBDLDL</span><span class="p">,</span><span class="w">
+  </span><span class="n">XSCH</span><span class="p">,</span><span class="w"> </span><span class="n">LBXSGL</span><span class="p">,</span><span class="w"> </span><span class="n">LBXSATSI</span><span class="p">,</span><span class="w">  </span><span class="n">LBXSASSI</span><span class="p">,</span><span class="w"> </span><span class="n">LBXSC3SI</span><span class="p">,</span><span class="w">  </span><span class="n">LBXSGTSI</span><span class="p">,</span><span class="w"> </span><span class="n">LBXSIR</span><span class="p">,</span><span class="w"> </span><span class="n">LBDSTPSI</span><span class="p">,</span><span class="w"> </span><span class="n">LBXSTR</span><span class="p">,</span><span class="w"> </span><span class="n">LBXSUA</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">dplyr</span><span class="o">::</span><span class="n">rename</span><span class="p">(</span><span class="w">
+    </span><span class="n">Gender</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RIAGENDR</span><span class="p">,</span><span class="w">
+    </span><span class="n">Age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RIDAGEYR</span><span class="p">,</span><span class="w">
+    </span><span class="n">Ethnicity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RIDRETH1</span><span class="p">,</span><span class="w">
+    </span><span class="n">Country_Birth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DMDBORN</span><span class="p">,</span><span class="w">
+    </span><span class="n">Time_US</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DMDYRSUS</span><span class="p">,</span><span class="w">
+    </span><span class="n">Education_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DMDEDUC2</span><span class="p">,</span><span class="w">
+    </span><span class="n">Income</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">INDHHINC</span><span class="p">,</span><span class="w">
+    </span><span class="n">BP_Sys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BPXSY1</span><span class="p">,</span><span class="w">
+    </span><span class="n">BP_Dia</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BPXDI1</span><span class="p">,</span><span class="w">
+    </span><span class="n">Weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BMXWT</span><span class="p">,</span><span class="w">
+    </span><span class="n">Fast_Glu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LBXGLU</span><span class="p">,</span><span class="w">
+    </span><span class="n">Insulin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LBXIN</span><span class="p">,</span><span class="w">
+    </span><span class="n">Alcohol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ALQ120Q</span><span class="p">,</span><span class="w">
+    </span><span class="n">Diabetes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DIQ010</span><span class="p">,</span><span class="w">
+    </span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="22-merging-datasets">2.2 Merging datasets</h3>
+<p>Variables were coded inconsistently per survey cycle and were manually renamed using <code class="language-plaintext highlighter-rouge">dplyr::rename</code> (see code above). Making sure each variable was coded the same for each survey, I then merged all datasets into one called <code class="language-plaintext highlighter-rouge">combined</code>. Merging all survey cycles resulted in a dataset containing 101,316 observations.</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#merging surveys together</span><span class="w">
+</span><span class="n">combined</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">do.call</span><span class="p">(</span><span class="s2">"rbind"</span><span class="p">,</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">survey_1999_2000</span><span class="p">,</span><span class="n">survey_2001_2002</span><span class="p">,</span><span class="n">survey_2003_2004</span><span class="p">,</span><span class="w">
+                     </span><span class="n">survey_2005_2006</span><span class="p">,</span><span class="n">survey_2007_2008</span><span class="p">,</span><span class="n">survey_2009_2010</span><span class="p">,</span><span class="w">
+                     </span><span class="n">survey_2011_2012</span><span class="p">,</span><span class="n">survey_2013_2014</span><span class="p">,</span><span class="n">survey_2015_2016</span><span class="p">,</span><span class="w">
+                     </span><span class="n">survey_2017_2018</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="23-removing-25-missing-data">2.3 Removing 25% missing data</h3>
+<p>Variables with more than 25% missing were removed as anymore lead to bias in results (Zhuchkova &amp; Rotmistrov, 2021). There are many different approaches to missingness including keeping it all in the data, as long as you justify your actions.</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#showing percent of missing values in each column</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">colMeans</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">combined</span><span class="p">))</span><span class="o">*</span><span class="m">100</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">#removing columns (variables) with more than 25% missingness (25 variables remain)</span><span class="w">
+</span><span class="n">combined25</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">combined</span><span class="p">[,</span><span class="w"> </span><span class="n">which</span><span class="p">(</span><span class="n">colMeans</span><span class="p">(</span><span class="o">!</span><span class="nf">is.na</span><span class="p">(</span><span class="n">combined</span><span class="p">))</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">0.75</span><span class="p">)]</span><span class="w">
+
+</span><span class="c1">#making sure variables are coded correctly</span><span class="w">
+</span><span class="n">combined25</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">ff_glimpse</span><span class="p">()</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="24-data-type-transformations">2.4 Data type transformations</h3>
+<p>25 variables remained and were transformed into numeric or categorical datatypes. Example code:</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#converting continuous factors to numeric</span><span class="w">
+</span><span class="n">combined25</span><span class="o">$</span><span class="n">Age</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">combined25</span><span class="o">$</span><span class="n">Age</span><span class="p">))</span><span class="w">
+</span><span class="n">combined25</span><span class="o">$</span><span class="n">Weight</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">combined25</span><span class="o">$</span><span class="n">Weight</span><span class="p">))</span><span class="w">
+
+</span><span class="c1">#converting categorical factors to factors</span><span class="w">
+</span><span class="n">combined25</span><span class="o">$</span><span class="n">Gender</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">combined25</span><span class="o">$</span><span class="n">Gender</span><span class="p">))</span><span class="w">
+</span><span class="n">combined25</span><span class="o">$</span><span class="n">Ethnicity</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">combined25</span><span class="o">$</span><span class="n">Ethnicity</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Levels in variables were also renamed to meaningful ones and those levels that contained responses like ‘refused’ or ‘unsure’ were dropped as it added no additional meaning to the data. Example code:</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">##### - Transforming categorical data levels into meaningful labels - #####</span><span class="w">
+</span><span class="n">levels</span><span class="p">(</span><span class="n">combined25</span><span class="o">$</span><span class="n">Country_Birth</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="s2">"USA"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Mexico"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"2"</span><span class="p">,</span><span class="s2">"Other Country"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"4"</span><span class="p">,</span><span class="w"> </span><span class="s2">"5"</span><span class="p">),</span><span class="w"> </span><span class="s2">"Delete"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"7"</span><span class="p">,</span><span class="s2">"9"</span><span class="p">,</span><span class="s2">"(Missing)"</span><span class="p">))</span><span class="w">
+
+</span><span class="c1">#dropping 'refused','don't know' and other meaningless responses in variables</span><span class="w">
+</span><span class="nf">is.na</span><span class="p">(</span><span class="n">combined25</span><span class="o">$</span><span class="n">Country_Birth</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">combined25</span><span class="o">$</span><span class="n">Country_Birth</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Delete"</span><span class="w"> 
+</span><span class="n">combined25</span><span class="o">$</span><span class="n">Country_Birth</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">droplevels</span><span class="p">(</span><span class="n">combined25</span><span class="o">$</span><span class="n">Country_Birth</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="25-splitting-data-into-train-and-test">2.5 Splitting data into train and test</h3>
+<p>I set seed and split the dataset to train (80%) and test (20%). Setting seed allows you to reproduce your reslts. Click <a href="https://www.kaggle.com/obrienmitch94/importance-of-setting-seed-in-model-fitting">here</a> for information and examples about setting seed.</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">set.seed</span><span class="p">(</span><span class="m">2021</span><span class="p">)</span><span class="w"> </span><span class="c1">#setting seed</span><span class="w">
+
+</span><span class="c1">#80% training, 20% test (stratified random sample)</span><span class="w">
+</span><span class="n">training_sub</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">combined25</span><span class="o">$</span><span class="n">Diabetes</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">createDataPartition</span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.8</span><span class="p">,</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+
+</span><span class="n">train_dat</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">combined25</span><span class="p">[</span><span class="n">training_sub</span><span class="p">,</span><span class="w"> </span><span class="p">]</span><span class="w">
+</span><span class="n">test_dat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">combined25</span><span class="p">[</span><span class="o">-</span><span class="n">training_sub</span><span class="p">,</span><span class="w"> </span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="26-single-imputation">2.6 Single imputation</h3>
+<p>You should have a reason for imputing missing data (replacing missing values with substituted values) - mine is that you can’t do feature selection on a dataset with missing data.</p>
+
+<p>The data was missing at random <a href="https://www.theanalysisfactor.com/missing-data-mechanism/">MAR</a>, so the probability of a missing observation could be explained by the observed data. I performed single imputation from the <code class="language-plaintext highlighter-rouge">mice</code> package in R was on remaining missingness, as missing data may lead to biased outcomes if not handled accordingly (Fan et al., 2014).</p>
+
+<p>To prevent information leakage, I imputed test data separately, based on the same training imputation model. This single imputation uses predictive mean matching for numeric variables, logistic regression (logit) for binary variables, multinomial logit for nominal &gt;2 levels and ordered logit for ordered var &gt;2 levels. I used 5 gibbs sampling iterations defined as <code class="language-plaintext highlighter-rouge">maxit=5</code> in the code below.</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#(5 gibbs sampling iterations)</span><span class="w">
+</span><span class="n">D_imp_train</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mice</span><span class="p">(</span><span class="n">train_dat</span><span class="p">,</span><span class="n">m</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">maxit</span><span class="o">=</span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">printFlag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2021</span><span class="p">)</span><span class="w">
+</span><span class="n">D_imp_trainC</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mice</span><span class="o">::</span><span class="n">complete</span><span class="p">(</span><span class="n">D_imp_train</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">#imputing test data based on the same training imputation model  - prevents information leakage</span><span class="w">
+</span><span class="n">imp_test</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">NADIA</span><span class="o">::</span><span class="n">mice.reuse</span><span class="p">(</span><span class="n">D_imp_train</span><span class="p">,</span><span class="w"> </span><span class="n">test_dat</span><span class="p">,</span><span class="w"> </span><span class="n">maxit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="n">printFlag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2021</span><span class="p">)</span><span class="w">
+</span><span class="n">imp_testC</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">imp_test</span><span class="p">[[</span><span class="m">1</span><span class="p">]]</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="27-downsampling">2.7 Downsampling</h3>
+<p>The diabetes dependent variable in the training data is imbalanced (i.e., <em>Diabetic</em>=6420: <em>Non-Diabetic</em>=74,633) and it was downsampled to the minority class, recommended for large datasets and greater generalisability (Duchesney et al., 2011; Xue &amp; Hall, 2015). There are other ways to deal with imbalances, see <a href="https://www.r-bloggers.com/2019/04/methods-for-dealing-with-imbalanced-data/">here</a>. Again do as you please, as long as you can justify your actions.</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#original training table = &gt;1:10 class imbalanace</span><span class="w">
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">2021</span><span class="p">)</span><span class="w">
+</span><span class="n">downsamp_train</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">downSample</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">D_imp_trainC</span><span class="p">[,</span><span class="m">-1</span><span class="p">],</span><span class="w">
+                    </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">D_imp_trainC</span><span class="o">$</span><span class="n">Diabetes</span><span class="p">,</span><span class="w">
+                    </span><span class="n">yname</span><span class="o">=</span><span class="s2">"Diabetes"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="28-dummy-coding-normalisation-and-standardisation">2.8 Dummy coding, normalisation and standardisation</h3>
+<p>Categorical variables in the train and test data were dummy coded and all variables were centered and scaled. To prevent information leakage, calculations from training set were used to standardise variables in the test set. This resulted in 31 variables in both sets.</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">###DUMMY CODING - dummy code on  train and test data separately  - prevents information leakage</span><span class="w">
+</span><span class="c1">#dummy code  IVs </span><span class="w">
+</span><span class="n">D_Xtrain</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">model.matrix</span><span class="p">(</span><span class="n">Diabetes</span><span class="o">~</span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">downsamp_train</span><span class="p">)[,</span><span class="m">-1</span><span class="p">]</span><span class="w">
+</span><span class="n">D_Xtest</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">model.matrix</span><span class="p">(</span><span class="n">Diabetes</span><span class="o">~</span><span class="n">.</span><span class="p">,</span><span class="w"> </span><span class="n">imp_testC</span><span class="p">)[,</span><span class="m">-1</span><span class="p">]</span><span class="w">
+
+</span><span class="c1">#numeric conversion of DV - </span><span class="w">
+</span><span class="n">D_Ytrain</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">downsamp_train</span><span class="o">$</span><span class="n">Diabetes</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Diabetic"</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w">
+</span><span class="n">D_Ytrain</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">D_Ytrain</span><span class="p">))</span><span class="w">
+</span><span class="c1">#performance metrics: balanced accuray, P/R, F1</span><span class="w">
+
+</span><span class="c1">###STANDARDISATION</span><span class="w">
+</span><span class="c1">#standardisng variables in training set </span><span class="w">
+</span><span class="n">D_vals_preproc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">caret</span><span class="o">::</span><span class="n">preProcess</span><span class="p">(</span><span class="n">D_Xtrain</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"center"</span><span class="p">,</span><span class="w"> </span><span class="s2">"scale"</span><span class="p">))</span><span class="w">
+</span><span class="n">D_scaledDummy_Xtrain</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">D_vals_preproc</span><span class="p">,</span><span class="w"> </span><span class="n">D_Xtrain</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">#using calculations from training set to standardise variables in the test set  - prevents information leakage</span><span class="w">
+</span><span class="n">D_scaledDummy_Xtest</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">D_vals_preproc</span><span class="p">,</span><span class="w"> </span><span class="n">D_Xtest</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="3-feature-selection">3. Feature Selection</h2>
+<p>Final feature selection was conducted using LASSO logistic regression as it avoids overfitting the model and helps achieve better classification accuracy (Ludwig et al., 2015). Ten-fold cross-validation was performed whilst parameter tuning the lambda value in LASSO to avoid information leakage. Twenty-six variables were kept in both sets.</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#using 10 fold CV for finding best lambda&amp;model fit</span><span class="w">
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">2021</span><span class="p">)</span><span class="w">
+</span><span class="n">fit_lassologit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cv.glmnet</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">D_scaledDummy_Xtrain</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">D_Ytrain</span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"binomial"</span><span class="p">,</span><span class="w"> </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">nfolds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="n">standardize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">#plot CV error of log lambda, in graph log of optimal lambda is approx</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">fit_lassologit</span><span class="p">,</span><span class="w"> </span><span class="n">xlab</span><span class="o">=</span><span class="s2">"Log Lambda"</span><span class="p">,</span><span class="w"> </span><span class="n">ylab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Cross validation error"</span><span class="p">)</span><span class="w">
+</span><span class="c1">#26 variables included in lowest CV error (not including intercept)</span><span class="w">
+
+</span><span class="c1">#optimal lamba value</span><span class="w">
+</span><span class="n">fit_lassologit</span><span class="o">$</span><span class="n">lambda.min</span><span class="w">
+</span></code></pre></div></div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#showing 26 important variables</span><span class="w">
+</span><span class="n">coef</span><span class="p">(</span><span class="n">fit_lassologit</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fit_lassologit</span><span class="o">$</span><span class="n">lambda.min</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p><img src="https://user-images.githubusercontent.com/75398560/123777429-89891300-d913-11eb-8e6d-bc5e58814abb.png" alt="image" /></p>
+
+<h2 id="4-lasso-logistic-regression">4. LASSO Logistic Regression</h2>
+<p>The data was overall imbalanced therefore balanced accuracy, sensitivity, and specificity were used (Duchesney et al., 2011; Xue &amp; Hall, 2015). Using LASSO logistic regression an overall balanced accuracy of 83.156%.</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#extracting predictions and class probabilities</span><span class="w">
+</span><span class="n">prob_lassolog</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">fit_lassologit</span><span class="p">,</span><span class="w"> </span><span class="n">newx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">D_scaledDummy_Xtest</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"lambda.min"</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"response"</span><span class="p">)</span><span class="w"> </span><span class="c1">#probabilities</span><span class="w">
+</span><span class="n">pred_lassolog</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">prob_lassolog</span><span class="w"> </span><span class="o">&gt;</span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="s2">"Diabetic"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Non-Diabetic"</span><span class="p">)</span><span class="w"> </span><span class="c1">#predicted values</span><span class="w">
+
+</span><span class="n">D_actual</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">imp_testC</span><span class="o">$</span><span class="n">Diabetes</span><span class="w"> </span><span class="c1">#actual values</span><span class="w">
+
+</span><span class="c1">#confusion matrix</span><span class="w">
+</span><span class="n">confusionMatrix</span><span class="p">((</span><span class="n">factor</span><span class="p">(</span><span class="n">pred_lassolog</span><span class="p">)),(</span><span class="n">factor</span><span class="p">(</span><span class="n">D_actual</span><span class="p">)))</span><span class="w">
+</span></code></pre></div></div>
+<p><img src="https://user-images.githubusercontent.com/75398560/123776995-2303f500-d913-11eb-932c-2c0fe15b78b5.png" alt="image" /></p>
+
+<h2 id="5-random-forest-model">5. Random Forest Model</h2>
+<p>Five-fold cross-validation was performed during model trainings on training set, with parameter tuning utilised via grid-search for optimal parameters for each model. During validation, models were used with testing data to output predictions for corresponding diabetes class labels. An overall balanced acccuracy of 83.156% resulted.</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">control</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'cv'</span><span class="p">,</span><span class="w"> </span><span class="n">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">search</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'grid'</span><span class="p">,</span><span class="w"> </span><span class="n">allowParallel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">#creating data frame with possible tuning values for mtry parameters</span><span class="w">
+</span><span class="n">tuning_grid</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">expand.grid</span><span class="p">(</span><span class="n">.mtry</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">4</span><span class="p">,</span><span class="m">6</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">))</span><span class="w">
+
+</span><span class="c1">#training with various ntrees</span><span class="w">
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">2021</span><span class="p">)</span><span class="w">
+</span><span class="n">rf_fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RD_scaledDummy_XtrainM</span><span class="p">,</span><span class="w">
+                </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">D_Ytrain</span><span class="p">,</span><span class="w">
+                </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"rf"</span><span class="p">,</span><span class="w"> 
+                </span><span class="n">metric</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Accuracy'</span><span class="p">,</span><span class="w"> 
+                </span><span class="n">tuneGrid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tuning_grid</span><span class="p">,</span><span class="w"> 
+                </span><span class="n">trControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">control</span><span class="p">,</span><span class="w">
+                </span><span class="n">ntree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">500</span><span class="p">)</span><span class="w">
+
+
+</span><span class="n">rf_fit</span><span class="o">$</span><span class="n">finalModel</span><span class="w">
+
+</span><span class="c1">#best mtry = 5</span><span class="w">
+</span></code></pre></div></div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">set.seed</span><span class="p">(</span><span class="m">2021</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">#extracting predictions and class probabilities</span><span class="w">
+</span><span class="n">pred_rf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">caret</span><span class="o">::</span><span class="n">predict.train</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">rf_fit</span><span class="p">,</span><span class="w"> </span><span class="n">RD_scaledDummy_XtestM</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"raw"</span><span class="p">)</span><span class="w"> </span><span class="c1">#predictions</span><span class="w">
+</span><span class="n">pred_rf2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">pred_rf</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Diabetic"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Non-Diabetic"</span><span class="p">)</span><span class="w"> </span><span class="c1">#predicted values</span><span class="w">
+
+</span><span class="n">D_actual</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">imp_testC</span><span class="o">$</span><span class="n">Diabetes</span><span class="w"> </span><span class="c1">#actual values</span><span class="w">
+
+</span><span class="c1">#confusion-matrix</span><span class="w">
+
+</span><span class="n">confusionMatrix</span><span class="p">(</span><span class="n">factor</span><span class="p">(</span><span class="n">pred_rf2</span><span class="p">),</span><span class="n">factor</span><span class="p">(</span><span class="n">D_actual</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+<p><img src="https://user-images.githubusercontent.com/75398560/123777918-fc928980-d913-11eb-851f-5aa901082b68.png" alt="image" /></p>
+
+<h2 id="6-naive-bayes-model">6. Naive Bayes Model</h2>
+<p>Balanced accuracy of 77.122%.</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Parameters to tune</span><span class="w">
+</span><span class="c1"># laplace (Laplace Correction)</span><span class="w">
+</span><span class="c1"># usekernel (Distribution Type)</span><span class="w">
+</span><span class="c1"># adjust (bandwidth adjustment)</span><span class="w">
+
+
+</span><span class="c1">#creating 5 fold CV  using gridsearch </span><span class="w">
+</span><span class="n">controlnb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'cv'</span><span class="p">,</span><span class="w"> </span><span class="n">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">search</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'grid'</span><span class="p">,</span><span class="w"> </span><span class="n">allowParallel</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">#creating data frame with possible tuning values for  parameters</span><span class="w">
+</span><span class="n">tuning_gridnb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">expand.grid</span><span class="p">(</span><span class="n">laplace</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">0.5</span><span class="p">,</span><span class="m">1</span><span class="p">),</span><span class="w"> </span><span class="n">usekernel</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="kc">TRUE</span><span class="p">,</span><span class="kc">FALSE</span><span class="p">),</span><span class="w"> </span><span class="n">adjust</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">1.5</span><span class="p">,</span><span class="m">3.0</span><span class="p">))</span><span class="w">
+
+</span><span class="c1">#training with various ntrees</span><span class="w">
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">2021</span><span class="p">)</span><span class="w">
+</span><span class="n">nb_fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RD_scaledDummy_XtrainM</span><span class="p">,</span><span class="w">
+                </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">D_Ytrain</span><span class="p">,</span><span class="w"> 
+                </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"naive_bayes"</span><span class="p">,</span><span class="w"> 
+                </span><span class="n">metric</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Accuracy'</span><span class="p">,</span><span class="w"> 
+                </span><span class="n">tuneGrid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tuning_gridnb</span><span class="p">,</span><span class="w"> 
+                </span><span class="n">trControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">controlnb</span><span class="p">,</span><span class="w">
+                </span><span class="n">usepoisson</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+
+</span></code></pre></div></div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">set.seed</span><span class="p">(</span><span class="m">2021</span><span class="p">)</span><span class="w">
+</span><span class="c1">#extracting predictions and class probabilities</span><span class="w">
+</span><span class="n">pred_nb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">caret</span><span class="o">::</span><span class="n">predict.train</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">nb_fit</span><span class="p">,</span><span class="w"> </span><span class="n">RD_scaledDummy_XtestM</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"raw"</span><span class="p">)</span><span class="w"> </span><span class="c1">#predictions</span><span class="w">
+</span><span class="n">pred_nb2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">pred_nb</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Diabetic"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Non-Diabetic"</span><span class="p">)</span><span class="w"> </span><span class="c1">#predicted values</span><span class="w">
+
+</span><span class="n">D_actual</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">imp_testC</span><span class="o">$</span><span class="n">Diabetes</span><span class="w"> </span><span class="c1">#actual values</span><span class="w">
+
+</span><span class="c1">#confusion-matrix</span><span class="w">
+
+</span><span class="n">confusionMatrix</span><span class="p">(</span><span class="n">factor</span><span class="p">(</span><span class="n">pred_nb2</span><span class="p">),</span><span class="n">factor</span><span class="p">(</span><span class="n">D_actual</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+<p><img src="https://user-images.githubusercontent.com/75398560/123778210-395e8080-d914-11eb-8226-b61b389c720e.png" alt="image" /></p>
+
+<h2 id="7-extreme-gradient-boost-xgboost-model">7. eXtreme Gradient Boost (XGBoost) Model</h2>
+<p>83.156% balanced accuracy.</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#Parameters to tune</span><span class="w">
+</span><span class="c1"># nrounds ( Boosting Iterations)</span><span class="w">
+</span><span class="c1"># max_depth (Max Tree Depth)</span><span class="w">
+</span><span class="c1"># eta (Shrinkage)</span><span class="w">
+</span><span class="c1"># gamma (Minimum Loss Reduction)</span><span class="w">
+</span><span class="c1"># colsample_bytree (Subsample Ratio of Columns)</span><span class="w">
+</span><span class="c1"># min_child_weight (Minimum Sum of Instance Weight)</span><span class="w">
+</span><span class="c1"># subsample (Subsample Percentage)</span><span class="w">
+
+</span><span class="c1">#creating 5 fold CV  using gridsearch</span><span class="w">
+</span><span class="n">controlxgb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">trainControl</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'cv'</span><span class="p">,</span><span class="w"> </span><span class="n">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">search</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'grid'</span><span class="p">,</span><span class="w"> </span><span class="n">allowParallel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">#creating data frame with possible tuning values for parameters</span><span class="w">
+</span><span class="n">tuning_gridxgb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">expand.grid</span><span class="p">(</span><span class="w">
+  </span><span class="n">nrounds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">200</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">),</span><span class="w">
+  </span><span class="n">eta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.025</span><span class="p">,</span><span class="w"> </span><span class="m">0.05</span><span class="p">,</span><span class="w"> </span><span class="m">0.1</span><span class="p">,</span><span class="w"> </span><span class="m">0.3</span><span class="p">),</span><span class="w">
+  </span><span class="n">max_depth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="p">(</span><span class="n">from</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="o">=</span><span class="m">24</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="o">=</span><span class="m">2</span><span class="p">),</span><span class="w">
+  </span><span class="n">gamma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w">
+  </span><span class="n">colsample_bytree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w">
+  </span><span class="n">min_child_weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w">
+  </span><span class="n">subsample</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">#training with various ntrees</span><span class="w">
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">2021</span><span class="p">)</span><span class="w">
+</span><span class="n">xgb_fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">train</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RD_scaledDummy_XtrainM</span><span class="p">,</span><span class="w">
+                </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">D_Ytrain</span><span class="p">,</span><span class="w"> 
+                </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'xgbTree'</span><span class="p">,</span><span class="w"> 
+                </span><span class="n">metric</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Accuracy'</span><span class="p">,</span><span class="w"> 
+                </span><span class="n">tuneGrid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tuning_gridxgb</span><span class="p">,</span><span class="w"> 
+                </span><span class="n">trControl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">controlxgb</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#extracting predictions and class probabilities</span><span class="w">
+</span><span class="n">pred_xgb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">caret</span><span class="o">::</span><span class="n">predict.train</span><span class="p">(</span><span class="n">object</span><span class="o">=</span><span class="n">xgb_fit</span><span class="p">,</span><span class="w"> </span><span class="n">RD_scaledDummy_XtestM</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"raw"</span><span class="p">)</span><span class="w"> </span><span class="c1">#predictions</span><span class="w">
+</span><span class="n">pred_xgb2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">pred_rf</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Diabetic"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Non-Diabetic"</span><span class="p">)</span><span class="w"> </span><span class="c1">#predicted values</span><span class="w">
+
+</span><span class="n">D_actual</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">imp_testC</span><span class="o">$</span><span class="n">Diabetes</span><span class="w"> </span><span class="c1">#actual values</span><span class="w">
+
+</span><span class="c1">#confusion-matrix</span><span class="w">
+</span><span class="n">confusionMatrix</span><span class="p">(</span><span class="n">factor</span><span class="p">(</span><span class="n">pred_xgb2</span><span class="p">),</span><span class="n">factor</span><span class="p">(</span><span class="n">D_actual</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+<p><img src="https://user-images.githubusercontent.com/75398560/123778684-b12cab00-d914-11eb-9219-ba00bd6fbb21.png" alt="image" /></p>
+
+<p><em><strong>NOTE</strong></em> : I’m not perfect and neither is my code! I’m learning new/more efficient ways to code all the time, so if you find a better way of doing things then go for that. I’m just putting this code and project out there for those interested in the data science field and to show you what I love doing :D</p>
+
+<h2 id="references">References</h2>
+<p>Australian Institute of Health and Welfare [AIHW]. (2020). Diabetes. https://www.aihw.gov.au/reports/diabetes/diabetes/contents/deaths-from-diabetes.</p>
+
+<p>Centre for Disease Control and Prevention in America [CDC]. (2021). National Health and Nutrition Examination Survey. http://www.cdc.gov/nhanes.</p>
+
+<p>Diabetes Australia. (2020). Diabetes in Australia. https://www.diabetesaustralia.com.au/about-diabetes/diabetes-in-australia/.</p>
+
+<p>Dong, Z., Wang, H., Yu, Y., Li, Y., Naidu, R., &amp; Liu, Y. (2019). Using 2003–2014 U.S. NHANES data to determine the associations between per- and polyfluoroalkyl substances and cholesterol: Trend and implications. Ecotoxicology and Environmental Safety, 173, 461–468. https://doi.org/10.1016/j.ecoenv.2019.02.061</p>
+
+<p>Fan, J., Han, F., &amp; Liu, H. (2014). Challenges of Big Data analysis. National Science Review, 1(2), 293–314. https://doi.org/10.1093/nsr/nwt032</p>
+
+<p>Ludwig, N., Feuerriegel, S., &amp; Neumann, D. (2015). Putting Big Data analytics to work: Feature selection for forecasting electricity prices using the LASSO and random forests. Journal of Decision Systems, 24(1), 19–36. https://doi.org/10.1080/12460125.2015.994290</p>
+
+<p>McDowell, M., Dillon, C., Osterloh, J., Bolger, P., Pellizzari, E., Fernando, R., Montes de Oca, R., Schober, S., Sinks, T., Jones, R., &amp; Mahaffey, K. (2004). Hair Mercury Levels in U.S. Children and Women of Childbearing Age: Reference Range Data from NHANES 1999-2000. Environmental Health Perspectives, 112(11), 1165–1171. https://doi.org/10.1289/ehp.7046</p>
+
+<p>Park, J., Lee, H., Park, J., Jung, D., &amp; Lee, J. (2021). White Blood Cell Count as a Predictor of Incident Type 2 Diabetes Mellitus Among Non-Obese Adults: A Longitudinal 10-Year Analysis of the Korean Genome and Epidemiology Study. Journal of Inflammation Research, 14, 1235–1242. https://doi.org/10.2147/JIR.S300026</p>
+
+<p>Taheri, S., Asim, M., Al Malki, H., Fituri, O., Suthanthiran, M., &amp; August, P. (2018). Intervention using vitamin D for elevated urinary albumin in type 2 diabetes mellitus (IDEAL-2 Study): study protocol for a randomised controlled trial. Trials, 19(1), 230–230. https://doi.org/10.1186/s13063-018-2616-5</p>
+
+<p>Willett W. C. (2002). Balancing lifestyle and genomics research for disease prevention. Science, 296(5568), 695–698. https://doi.org/10.1126/science.1071055</p>
+
+<p>Xue, J.-H., &amp; Hall, P. (2015). Why Does Rebalancing Class-Unbalanced Data Improve AUC for Linear Discriminant Analysis? IEEE Transactions on Pattern Analysis and Machine Intelligence, 37(5), 1109–1112. https://doi.org/10.1109/TPAMI.2014.2359660</p>
+
+<p>Zhu, F., Chen, C., Zhang, Y., Chen, S., Huang, X., Li, J., Wang, Y., Liu, X., Deng, G., &amp; Gao, J. (2020). Elevated blood mercury level has a non-linear association with infertility in U.S. women: Data from the NHANES 2013–2016. Reproductive Toxicology (Elmsford, N.Y.), 91, 53–58. https://doi.org/10.1016/j.reprotox.2019.11.005</p>
+
+<p>Zhuchkova, S., &amp; Rotmistrov, A. (2021). How to choose an approach to handling missing categorical data: (un)expected findings from a simulated statistical experiment. Quality &amp; Quantity. https://doi.org/10.1007/s11135-021-01114-w</p>
+
+<p><a href="https://www.mz-store.com/blog/diabetes-and-physical-exercise-contraindications-a-post-training-meal-for-a-diabetics/"><em>image source</em></a></p>
+
+
+      <footer class="site-footer">
+        
+          <span class="site-footer-owner"><a href="https://github.com/aelb66/Diabetes-Classifier">Diabetes-Classifier</a> is maintained by <a href="https://github.com/aelb66">aelb66</a>.</span>
+        
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a>.</span>
+      </footer>
+    </section>
+
+    
+  </body>
 </html>
